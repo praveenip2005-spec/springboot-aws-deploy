@@ -1,35 +1,26 @@
 version: 0.2
 
-env:
-  variables:
-    AWS_DEFAULT_REGION: us-east-1
-    REPOSITORY_URI: 078238935473.dkr.ecr.us-east-1.amazonaws.com/spring-demo-ecr
-
 phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
       - aws --version
-      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin 078238935473.dkr.ecr.us-east-1.amazonaws.com
-      - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
+      - export AWS_DEFAULT_REGION=us-east-1
+      - export REPOSITORY_URI=078238935473.dkr.ecr.us-east-1.amazonaws.com/spring-demo-ecr
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $REPOSITORY_URI
 
   build:
     commands:
-      - echo Build started on `date`
+      - echo Build started...
       - mvn clean package -DskipTests
-      - echo Building Docker image...
-      - docker build -t $REPOSITORY_URI:latest .
-      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
+      - docker build -t spring-demo-ecr .
+      - docker tag spring-demo-ecr:latest $REPOSITORY_URI:latest
 
   post_build:
     commands:
-      - echo Build completed on `date`
+      - echo Pushing Docker image...
       - docker push $REPOSITORY_URI:latest
-      - docker push $REPOSITORY_URI:$IMAGE_TAG
-      - printf '[{"name":"spring-demo-ecr","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
-      - cat imagedefinitions.json
 
 artifacts:
   files:
-    - imagedefinitions.json
-    - target/springboot-aws-deploy.jar
+    - '**/*'
