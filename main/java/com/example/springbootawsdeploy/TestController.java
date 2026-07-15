@@ -7,8 +7,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/demo")
 public class TestController {
+
     @GetMapping("/data")
     public String getData() {
-        return "First message from AWS Ecs";
+        return "First message from AWS ECS";
     }
 
+}
