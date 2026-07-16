@@ -4,6 +4,7 @@ env:
   variables:
     AWS_DEFAULT_REGION: us-east-1
     REPOSITORY_URI: 322814812989.dkr.ecr.us-east-1.amazonaws.com/spring-demo-ecr
+    IMAGE_TAG: latest
 
 phases:
   pre_build:
@@ -17,14 +18,13 @@ phases:
       - echo Build started...
       - mvn clean package -DskipTests
       - docker build -t spring-demo-ecr .
-      - docker tag spring-demo-ecr:latest $REPOSITORY_URI:latest
+      - docker tag spring-demo-ecr:latest $REPOSITORY_URI:$IMAGE_TAG
 
   post_build:
     commands:
       - echo Pushing Docker image...
-      - docker push $REPOSITORY_URI:latest
-      - echo Build completed.
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
 
 artifacts:
   files:
-    - '**/*'
+    - target/*.jar
