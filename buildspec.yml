@@ -2,8 +2,8 @@ version: 0.2
 
 env:
   variables:
-    aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 322814812989.dkr.ecr.us-east-1.amazonaws.com
-    322814812989.dkr.ecr.us-east-1.amazonaws.com/spring-demo-ecr
+    AWS_DEFAULT_REGION: us-east-1
+    REPOSITORY_URI: 322814812989.dkr.ecr.us-east-1.amazonaws.com/spring-demo-ecr
     IMAGE_TAG: latest
 
 phases:
